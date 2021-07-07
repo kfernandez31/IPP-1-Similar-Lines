@@ -39,6 +39,7 @@ typedef enum LineType
 typedef enum WordType
 {
     ALPHA = 0,
+    //TODO: zmień nazwę na "nan"
     NUM = 1,
 } WordType;
 
@@ -77,16 +78,15 @@ typedef struct WordWithCount
 
 typedef struct Group
 {
-    uint *lines;
-    size_t num_lines;
+    scv_vector *lines;
 } Group;
 
 
 // "kompiluję z flagą, która to optymalizuje" //TODO: poczytaj o tym :pp
+//TODO: czy zostawiamy te vectory czy gdzieś zmienić na dynamiczne tablice?
 typedef struct GroupSet
 {
-    Group *groups;
-    size_t num_groups;
+    scv_vector *groups;
 } GroupSet;
 
 
@@ -94,10 +94,11 @@ typedef struct GroupSet
 // I'll use a vector, to keep the number of allocations logarithmic
 typedef struct Line
 {
-    char *as_text;
     LineType line_type;
     uint line_num;
-    scv_vector *words_multiset;
+    scv_vector *nums_multiset;
+    scv_vector *alphas_multiset;
+    bool belongs_to_group;
 } Line;
 
 typedef struct LineSet
@@ -157,16 +158,45 @@ bool containsOnlyLegalChars(char *str);
 bool containsOnlyWhiteSpace(char *str);
 
 /*
+ * Returns true if both strings are identical, ignoring case.
+ */
+bool alphaEquals(char *alpha1, char *alpha2);
+
+/*
  * Returns true if a true value is returned by comparing both number's values using "==".
  * Since numbers that return false in hasFracPart() are converted integers, no doubles will ever return true when
  * compared to an integer with this function.
  */
-bool numbercmp(Number num1, Number num2);
+bool numberEquals(Number *num1, Number *num2);
 
 /*
- * A wrapper for comparing words; be it number-words or nan-words.
+ * Returns true if both words are of the same type and have matching strings/number values,
+ * false otherwise.
  */
-bool wordcmp(Word word1, Word word2);
+bool wordEquals(Word *word1, Word *word2);
+
+/*
+ * Function to compare two instances of struct Number,
+ * in order to sort them later on.
+ */
+int alphacmp(const void *alpha1, const void *alpha2);
+
+/*
+ * Function to compare two strings,
+ * in order to sort them later on.
+ */
+int numbercmp(const void *num1, const void *num2);
+
+/*
+ * Function to compare two words,
+ * in order to sort them later on.
+ */
+int wordcmp(Word *word1, Word *word2);
+
+/*
+ * Compares WordWithCount instances of both types: number or NaN.
+ */
+bool WWCEquals(WordWithCount *wwc1, WordWithCount *wwc2);
 
 /*
  * Initializes an instance of struct Word.
@@ -177,7 +207,7 @@ void createWordFromString(Word *word, char *str);
 /*
  * Returns a non-negataive index if line contains queried word, -1 otherwise.
  */
-size_t indexOfWord(scv_vector *v, Word query);
+uint indexOfWord(scv_vector *v, Word *query);
 
 /*
  * Creates an instance of struct WordWithCount, with count set initially to 1.
@@ -188,21 +218,74 @@ WordWithCount* createWordWithCount(Word w);
  * Creates an instance of struct Line.
  * Its field words_multiset is non-NULL if and only if line_type is LEGAL.
  */
-Line* createLine(char *line_as_str);
+Line *createLine(char *line_as_str, uint line_num);
 
 /*
  * Prints into a file which lines contained illegal characters.
  */
-void printErrorMessages(scv_vector *lines);
+void printErrorMessages(LineSet ls);
 
-/*void printGroups(GroupSet set);
-void printGroup(Group *group);
+/*
+ * Sorting function for groups (in ascending order).
+ */
+void sortGroups(GroupSet *gs);
 
-Line* createLineVector(FILE file);    //creates an array of Lines for the entire file
-uint* createGroupVector(FILE file);    //creates an array of indices of a group
-scv_vector* createVector(FILE file);//creates uint[] for a Group*/
+/*
+ * Sorting function for a NaN multiset (in alphanumeric order).
+ */
+void sortAlphas(scv_vector *alphas);
 
-void sortGroups(Group *group);
+/*
+ * Sorting function for a numbers multiset (in ascending order).
+ */
+void sortNums(scv_vector *nums);
 
+/*
+ * Generic function to compare two primitive types (i.e. int, float, char) and their derivatives,
+ * in order to sort them later on.
+ */
+int primcmp(const void *a, const void *b);
+
+
+/*
+ * Function to compare two groups,
+ * in order to sort them later on.
+ */
+int groupcmp(const void *a, const void *b);
+
+
+/*
+ * Prints all groups in gs.
+ */
+void printGroups(GroupSet gs);
+
+/*
+ * Prints a single group.
+ */
+void printGroup(Group g);
+
+/*
+ * Reads lines from standard input, converting each to an instance of struct Line, and adding them to an instance
+ * of struct LineSet.
+ */
+LineSet* getLines();
+
+/*
+ * Creates groups of similar lines based on the LineSet instance created by getLines().
+ * Example of line contents that will lead to a group being created:
+ * {{9, abc}, {abc, 0x09}, {011, ABC}, {.9e1, aBc}, {ABc, 09}}
+ */
+GroupSet* generateGroups(LineSet ls);
+
+/*
+ * Reads the next character, omitting any white-space before it.
+ */
+char getcharBetter();
+
+/*
+ * Returns true if all elements (of type WordWithCount) of both vectors return true on WWCEquals(),
+ * false otherwise.
+ */
+bool vectorEquals(scv_vector *v1, scv_vector *v2);
 
 #endif //IPP_MALE_ZADANIE_STRUCTURES_H
