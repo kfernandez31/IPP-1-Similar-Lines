@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include "Structures.h"
+#include "test.h"
+#include "similar_lines.h"
 
 void foo() {
     // TODO: numeracja linijek od 1-ki
@@ -17,26 +17,50 @@ void foo() {
 }
 
 int main(void) {
-    LineSet *ls = getLines();
+    //TEST_isNan();     // test passed
+    //TEST_isDouble();      // test passed
+    //TEST_hasFracPart();       // test passed
+    //TEST_isLegalChar();     // test passed
+    //TEST_containsOnlyLegalChars();     // test passed
+    //TEST_containsOnlyWhiteSpace();     // test passed
+    //TEST_alphaEquals();       // test passed
+    //TEST_numberEquals();       // test passed
+    //TEST_wordEquals();      // test passed
+    // alphacmp() działa, numbercmp() też
+    //TEST_cwEquals();     // test passed
+
+    //TEST_isOctal();       // test passed
+    //TEST_isDecimal();       // test passed
+    //TEST_isHex();       // test passed
+    //TEST_vectorEquals(); // test passed
+
+    //TEST_createWordFromString();    // test passed (?)
+    //TEST_createLine();    // test passed (?)
+    // hasFracPart(), isDouble(), isLegalChar(), createCountedWord(), indexOfWord() też
+
+
+    //TEST_sortStrings();
+    TEST_generateGroups();
+
+    return 0;
+}
+
+/*
+ *  LineSet *ls = getLines();
     GroupSet *gs = generateGroups(*ls);
 
     sortGroups(gs);
     printGroups(*gs);
+
     printErrorMessages(*ls);
+*/
 
-    //foo();
-    return 0;
-}
+/*    scv_vector *v = scv_new(sizeof(char), 0);
 
+    char *str = "siemaneczkosiemaneczkosiemaneczkosiemaneczkosiemaneczkosiemaneczkosiemaneczkosiemaneczkosiemaneczko\0";
 
-/*
-char getcharBetter()
-{
-    int c;
-    do
-    {
-        c = getchar();
-    } while(isspace(c));
+    for (int i = 0; i < strlen(str); i++) {
+        scv_push_back(v, &str[i]);
+    }
+    scv_shrink_to_fit(v);*/
 
-    return (char)c;
-}*/
