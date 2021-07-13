@@ -246,6 +246,7 @@ int scv_reserve(struct scv_vector *v, size_t capacity)
 	return SCV_OK;
 }
 
+
 size_t scv_capacity(const struct scv_vector *v)
 {
 	assert(v != NULL);

@@ -775,7 +775,7 @@ TEST TEST_numberEquals()
     n2->val_type = DOUBLE;
     n2->val._double = 20000.0;
     res = numberEquals(n1, n2);
-    //res = primcmp(&n1->val._double, &n2->val._double);
+    //res = my_memcmp(&n1->val._double, &n2->val._double);
     printf("res = %d\n", res);
 
     n1->val_type = NEGATIVE_INT;
@@ -783,7 +783,7 @@ TEST TEST_numberEquals()
     n2->val_type = NEGATIVE_INT;
     n2->val._negative_int = -20000;
     res = numberEquals(n1, n2);
-    //res = primcmp(&n1->val._negative_int, &n2->val._negative_int);
+    //res = my_memcmp(&n1->val._negative_int, &n2->val._negative_int);
     printf("res = %d\n", res);
 
     n1->val_type = UNSIGNED_INT;
@@ -791,7 +791,7 @@ TEST TEST_numberEquals()
     n2->val_type = UNSIGNED_INT;
     n2->val._unsigned_int = 20000;
     res = numberEquals(n1, n2);
-    //res = primcmp(&n1->val._unsigned_int, &n2->val._unsigned_int);
+    //res = my_memcmp(&n1->val._unsigned_int, &n2->val._unsigned_int);
     printf("res = %d\n", res);
 
     n1->val_type = DOUBLE;
@@ -799,7 +799,7 @@ TEST TEST_numberEquals()
     n2->val_type = UNSIGNED_INT;
     n2->val._unsigned_int = 55;
     res = numberEquals(n1, n2);
-    //res = primcmp(&n1->val._double, &n2->val._double);
+    //res = my_memcmp(&n1->val._double, &n2->val._double);
     printf("res = %d\n", res);
 
 
@@ -808,7 +808,7 @@ TEST TEST_numberEquals()
     n2->val_type = DOUBLE;
     n2->val._double = 55.67;
     res = numberEquals(n1, n2);
-    //res = primcmp(&n1->val._double, &n2->val._double);
+    //res = my_memcmp(&n1->val._double, &n2->val._double);
     printf("res = %d\n", res);
 
     free(n1);
@@ -1021,8 +1021,9 @@ TEST TEST_createLine()
     size_t len = 0;
     ssize_t strSize = my_getline(&str, &len);
     str[strcspn(str, "\n")] = '\0';
-    Line *line = createLine(str, 1);
-    printStrings(*line);
+    Line line;
+    createLine(&line, str, 1);
+    printNans(&line);
 
     int x = 3;
 }
@@ -1033,78 +1034,72 @@ TEST TEST_vectorEquals()
     char arr3[] = "2748 16777.215E3 1677721500E-2 1023 1023 1023 0x3FF";
     char arr4[] = "2748 16777.215E3 1677721500E-2 1677721500E-2 1023 1023 0x3FF 0x3FF";
 
-    Line *line1 = createLine(arr1, 1);
-    Line *line2 = createLine(arr2, 2);
-    Line *line3 = createLine(arr2, 3);
-    Line *line4 = createLine(arr2, 4);
+    Line line1;
+    createLine(&line1, arr1, 1);
+    Line line2;
+    createLine(&line2, arr2, 1);
+    Line line3;
+    createLine(&line3, arr3, 1);
+    Line line4;
+    createLine(&line4, arr4, 1);
     bool res;
 
-    res = vectorEquals(line1->nums_multiset, line2->nums_multiset);
+    res = vectorEquals(line1.nums_multiset, line2.nums_multiset);
     printf("%d\n", res);
-    res = vectorEquals(line1->nums_multiset, line1->strings_multiset);
+    res = vectorEquals(line1.nums_multiset, line1.strings_multiset);
     printf("%d\n", res);
-    res = vectorEquals(line1->strings_multiset, line2->strings_multiset);
+    res = vectorEquals(line1.strings_multiset, line2.strings_multiset);
     printf("%d\n", res);
-    res = vectorEquals(line2->strings_multiset, line3->strings_multiset);
+    res = vectorEquals(line2.strings_multiset, line3.strings_multiset);
     printf("%d\n", res);
-    res = vectorEquals(line2->strings_multiset, line4->strings_multiset);
+    res = vectorEquals(line2.strings_multiset, line4.strings_multiset);
     printf("%d\n", res);
 
-    //printStrings(line1->strings_multiset);
+    //printNans(line1.strings_multiset);
 }
 
 
-TEST TEST_sortStrings()
+TEST TEST_sortMultisets()
 {
-/*    scv_vector *vect = scv_new(sizeof(char**), INIT_CAP);
+    //TODO: dziś koniecznie do ogarnięcia funkcje sortujące
 
-    char *s1 = malloc(sizeof(char) * (strlen("aaaaaaaaa") + 1));
-    strcpy(s1, "aaaaaaaaa");
-    scv_push_back(vect, &s1);
+    char arr[] = "zak 0xABC siemka waeuiufhwevw tryt x sieeeaafaf O3rhue2bVp13 1023 tryteyrt zakfmefo 0XFFFFFF xxxxxxxxxx 16777215 01777 1023.0 abcdef\n";
+    //char arr[] = "0xABC 1023  0XFFFFFF 16777215 01777 1023.0 \n";
+    //char arr[] = "123 465 8424 16777124 999 1023\n";
+    //char arr[] = "1 -3 -3 -3 -3 -3 2 1 4 cb b aa\n";
+    //char arr[] = "123 0xABC 123 1677721 9999 01777 1023.0\n";
+    Line line;
+    createLine(&line, arr, 1);
 
-    char *s2 = malloc(sizeof(char) * (strlen("bbbbbbbbb") + 1));
-    strcpy(s2, "bbbbbbbbb");
-    scv_push_back(vect, &s2);
+    printNans(&line);
+    printNumbers(&line);
 
-    char *s3 = malloc(sizeof(char) * (strlen("ccccccccc") + 1));
-    strcpy(s3, "ccccccccc");
-    scv_push_back(vect, &s3);
+/*    CountedWord cw[100];
+    memcpy(cw,&line.nums_multiset,scv_size(line.nums_multiset));*/
 
-    char *s4 = malloc(sizeof(char) * (strlen("ddddddddd") + 1));
-    strcpy(s4, "ddddddddd");
-    scv_push_back(vect, &s4);
+/*    Number num0 = (GET_ITEM(CountedWord, line.nums_multiset, 0))->word.u.number;
+    Number num1 = (GET_ITEM(CountedWord, line.nums_multiset, 1))->word.u.number;
+    Number num2 = (GET_ITEM(CountedWord, line.nums_multiset, 2))->word.u.number;
+    Number num3 = (GET_ITEM(CountedWord, line.nums_multiset, 3))->word.u.number;
+    Number num4 = (GET_ITEM(CountedWord, line.nums_multiset, 4))->word.u.number;
+    Number num5 = (GET_ITEM(CountedWord, line.nums_multiset, 5))->word.u.number;
 
-    scv_shrink_to_fit(vect);
-    */
+    int comp_res;
 
-/*    char a[] = "aaaaaaaa";
-    char b[] = "bbbbbbbb";
-    char c[] = "cccccccc";
-    char d[] = "dddddddd";
-    scv_push_back(vect, a);
-    scv_push_back(vect, b);
-    scv_push_back(vect, c);
-    scv_push_back(vect, d);*/
-//    scv_push_back(vect, "abcdef");
-//    scv_push_back(vect, "kakfafak");
-//    scv_push_back(vect, "tryteyrt");
-//    scv_push_back(vect, "tryt");
-//    scv_push_back(vect, "sieeeaafaf");
-//    scv_push_back(vect, "zakfmefo");
-//    scv_push_back(vect, "waeuiufhwevw");
-//    scv_push_back(vect, "xxxxxxxxxx");
-//    scv_push_back(vect, "zak");
-/*    scv_shrink_to_fit(vect);
-    printStrings(vect);*/
+    comp_res = numbercmp(&num1, &num1);
+    comp_res = numbercmp(&num1, &num2);
+    comp_res = numbercmp(&num1, &num3);
+    comp_res = numbercmp(&num4, &num5);
+    comp_res = numbercmp(&num5, &num2);
+    comp_res = numbercmp(&num3, &num1);*/
 
-    //sortStrings(vect);
-    //printStrings(vect);
-    char arr[] = "zak 0xABC siemka waeuiufhwevw tryt x sieeeaafaf O3rhue2bVp13 tryteyrt zakfmefo 0XFFFFFF xxxxxxxxxx 16777215 01777 1023.0 abcdef\n";
-    Line *line = createLine(arr, 1);
-    printStrings(*line);
 
-    sortStrings(line);
-    printStrings(*line);
+    unsigned si = scv_size(line.nums_multiset);
+
+    sortMultisets(&line);
+    printf("\n=== SORTED ===\n");
+    printNans(&line);
+    printNumbers(&line);
 }
 TEST TEST_sortNums()
 {
@@ -1123,21 +1118,27 @@ TEST TEST_generateGroups()
     char arr4[] = "2748 16777.215E3 1677721500E-2 1023 1023 1023 0x3FF";
     char arr5[] = "2748 16777.215E3 1677721500E-2 1677721500E-2 1023 1023 0x3FF 0x3FF";
 
-    Line *l1 = createLine(arr1, 1);
-    Line *l2 = createLine(arr2, 2);
-    Line *l3 = createLine(arr3, 3);
-    Line *l4 = createLine(arr4, 4);
-    Line *l5 = createLine(arr5, 5);
+    Line line1;
+    createLine(&line1, arr1, 1);
+    Line line2;
+    createLine(&line2, arr2, 1);
+    Line line3;
+    createLine(&line3, arr3, 1);
+    Line line4;
+    createLine(&line4, arr4, 1);
+    Line line5;
+    createLine(&line5, arr5, 1);
 
-    scv_push_back(ls->lines, l1);
-    scv_push_back(ls->lines, l2);
-    scv_push_back(ls->lines, l3);
-    scv_push_back(ls->lines, l4);
-    scv_push_back(ls->lines, l5);
+    scv_push_back(ls->lines, &line1);
+    scv_push_back(ls->lines, &line2);
+    scv_push_back(ls->lines, &line3);
+    scv_push_back(ls->lines, &line4);
+    scv_push_back(ls->lines, &line5);
     scv_shrink_to_fit(ls->lines);
     gs = generateGroups(*ls);
     printGroups(*gs);
 }
+
 TEST TEST_printGroups()
 {
 
@@ -1156,5 +1157,10 @@ TEST TEST_getLines()
 }
 TEST TEST_printErrorMessages()
 {
+    char arr[] = "zak 0xABC siemka waeuiufhwevw tryt x sieeeaafaf O3rhue2bVp13 1023 tryteyrt zakfmefo 0XFFFFFF xxxxxxxxxx 16777215 01777 1023.0 abcdef\n";
+    Line line;
+    createLine(&line, arr, 1);
 
+    printNans(&line);
+    printNumbers(&line);
 }

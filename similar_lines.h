@@ -5,14 +5,17 @@
 #ifndef IPP_MALE_ZADANIE_SIMILAR_LINES_H
 #define IPP_MALE_ZADANIE_SIMILAR_LINES_H
 
+#define VAR_SIZE_8_BYTES 8
 #define SPACE 32
-#define EXCLAMATION_MARK 33
 #define TILDE 126
 #define ZERO 48
 #define SEVEN 55
 #define NINE 57
 #define A 65
 #define F 70
+
+#define NOT_FOUND (-1)
+#define INIT_CAP 1
 /*#define CHECK_PTR(ptr) do { if(ptr == NULL) exit(1); } while(0)*/
 
 #include <stdio.h>
@@ -21,6 +24,8 @@
 #include <string.h>
 #include <strings.h>
 #include <ctype.h>
+#include <limits.h>
+#include <float.h>
 #include "structures.h"
 
 /*
@@ -91,18 +96,24 @@ bool numberEquals(Number *num1, Number *num2);
 bool wordEquals(Word *word1, Word *word2);
 
 /*
- * Function to compare two instances of struct Number,
- * in order to sort them later on.
+ * Function to compare two instances of CountedWord that hold
+ * an instance of struct Number according to their numerical
+ * values.
  */
-int numbercmp(const void *num1, const void *num2);
+int cwNumbercmp(const void *cw1, const void *cw2);
+
 
 /*
- * Function to compare two instances of CountedWord -
- * it compares strings according to alphanumeric precedence,
- * and number according to their value. Doesn't put into account
- * the occurrences field of the struct.
+ * Function to compare two instances of struct Number
+ * based on their value.
  */
-int cwcmp(const void *cw1, const void *cw2);
+int numbercmp(const Number *num1, const Number *num2);
+
+/*
+ * Function to compare two instances of CountedWord that hold
+ * an string according to their alphanumeric precedence in ASCII.
+ */
+int cwNancmp(const void *cw1, const void *cw2);
 
 /* U    N   U   S   E   D
  * Function to compare two words,
@@ -119,7 +130,7 @@ bool cwEquals(CountedWord *cw1, CountedWord *cw2);
  * Initializes an instance of struct Word.
  * Always results in a NaN if unable to create a valid number in base 8/10/16.
  */
-int createWordFromString(Word *word, char *str);
+void createWordFromString(Word *word, char *str);
 
 /*
  * Returns a non-negataive index if line contains queried word, -1 otherwise.
@@ -135,7 +146,7 @@ CountedWord* createCountedWord(Word w);
  * Creates an instance of struct Line.
  * Its field words_multiset is non-NULL if and only if line_type is LEGAL.
  */
-Line *createLine(char *line_as_str, size_t line_num);
+void createLine(Line *input, char *line_as_str, size_t line_num);
 
 /*
  * Prints into a file which lines contained illegal characters.
@@ -148,22 +159,24 @@ void printErrorMessages(LineSet ls);
 void sortGroups(GroupSet *gs);
 
 /*
- * Sorting function for a NaN multiset (in alphanumeric order).
+ * Sorting function for both multisets of a line.
  */
-void sortStrings(Line *line);
+void sortMultisets(Line *line);
 
 /*
- * Sorting function for a numbers multiset (in ascending order).
+ * Memcmp, but N is set to VAR_SIZE_8_BYTES
  */
-void sortNums(Line *line);
+int my_memcmp(const void *a, const void *b);
 
 /*
- * Generic function to compare two primitive types (i.e. int, float, char) and their derivatives,
- * in order to sort them later on.
- * Naturally, floating point number comparison is precision-dependent.
+ * Function to compare two numbers of same val_type.
  */
-int primcmp(const void *a, const void *b);
+int sameTypecmp(const Number *num_a, const Number *num_b);
 
+/*
+ * Function to compare two numbers of different val_type.
+ */
+int diffTypecmp(const Number *num_a, const Number *num_b);
 
 /*
  * Function to compare two groups,
@@ -185,7 +198,7 @@ void printGroup(Group g);
  * Reads lines from standard input, converting each to an instance of struct Line, and adding them to an instance
  * of struct LineSet.
  */
-LineSet* getLines();
+void getLines(LineSet *ls);
 
 /*
  * Creates groups of similar lines based on the LineSet instance created by getLines().
@@ -216,8 +229,13 @@ bool isDigit(char c);
 ssize_t my_getline(char **_lineptr, size_t *_n);
 
 /*
- * Prints all strings in strings.
+ * Prints all strings in line.strings_multiset.
  */
-void printStrings(Line line);
+void printNans(Line *line);
+
+/*
+ * Prints all strings in line.numbers_multiset.
+ */
+void printNumbers(Line *line);
 
 #endif //IPP_MALE_ZADANIE_SIMILAR_LINES_H

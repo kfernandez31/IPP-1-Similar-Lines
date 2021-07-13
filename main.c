@@ -33,21 +33,24 @@ int main(void) {
     //TEST_isDecimal();       // test passed
     //TEST_isHex();       // test passed
     //TEST_vectorEquals(); // test passed
+    // TEST_sortMultisets();    // test passed
 
     //TEST_createWordFromString();    // test passed (?)
     //TEST_createLine();    // test passed (?)
     // hasFracPart(), isDouble(), isLegalChar(), createCountedWord(), indexOfWord() też
 
-
-    //TEST_sortStrings();
-    TEST_generateGroups();
+    //TEST_generateGroups();
+    TEST_printErrorMessages();
 
     return 0;
+    //TODO: funkcja do kasowania elementów vect, i samego vect
 }
 
 /*
- *  LineSet *ls = getLines();
-    GroupSet *gs = generateGroups(*ls);
+    LineSet ls;
+    getLines(&ls);
+    GroupSet gs;
+    getGroups(&gs);
 
     sortGroups(gs);
     printGroups(*gs);

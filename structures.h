@@ -12,10 +12,6 @@
 #include "scv.h"
 
 #define GET_ITEM(TYPE,vector,index) (TYPE*)scv_at(vector, index)
-#define SUCCESS 0
-#define FAILURE (-1)
-#define NOT_FOUND (-1)
-#define INIT_CAP 1
 
 typedef enum Base
 {
@@ -47,9 +43,10 @@ typedef enum WordType
 
 typedef enum ValType
 {
-    UNSIGNED_INT = 0,
-    NEGATIVE_INT = 1,
-    DOUBLE = 2,
+    UNSIGNED_INT = 1,
+    NEGATIVE_INT = 2,
+    DOUBLE = 4,
+
 } ValType;
 
 typedef struct Number

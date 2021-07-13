@@ -29,11 +29,9 @@ TEST TEST_createWordFromString();
 TEST TEST_createLine();
 TEST TEST_indexOfWord();
 TEST TEST_vectorEquals();
-
+TEST TEST_sortMultisets();
 
 //TODO: te funkcje zostały, reszta śmiga:
-TEST TEST_sortStrings();
-TEST TEST_sortNums();
 TEST TEST_generateGroups();
 TEST TEST_printGroups();
 TEST TEST_groupcmp();
