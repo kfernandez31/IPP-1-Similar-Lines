@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "test.h"
+#include "test/test.h"
 #include "similar_lines.h"
 
 void foo() {
@@ -44,6 +44,7 @@ int main(void) {
 
     return 0;
     //TODO: funkcja do kasowania elementów vect, i samego vect
+    // ogólnie dużo free()
 }
 
 /*

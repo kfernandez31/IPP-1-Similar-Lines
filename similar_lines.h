@@ -14,7 +14,7 @@
 #define A 65
 #define F 70
 
-#define NOT_FOUND (-1)
+#define NOT_FOUND -1
 #define INIT_CAP 1
 /*#define CHECK_PTR(ptr) do { if(ptr == NULL) exit(1); } while(0)*/
 
@@ -153,10 +153,10 @@ void createLine(Line *input, char *line_as_str, size_t line_num);
  */
 void printErrorMessages(LineSet ls);
 
-/*
+/*  U   N   U   S   E   D
  * Sorting function for groups (in ascending order).
  */
-void sortGroups(GroupSet *gs);
+/*void sortGroups(GroupSet *gs);*/
 
 /*
  * Sorting function for both multisets of a line.
@@ -187,12 +187,12 @@ int groupcmp(const void *a, const void *b);
 /*
  * Prints all groups in gs.
  */
-void printGroups(GroupSet gs);
+void printGroups(GroupSet *gs);
 
 /*
  * Prints a single group.
  */
-void printGroup(Group g);
+void printGroup(Group *g);
 
 /*
  * Reads lines from standard input, converting each to an instance of struct Line, and adding them to an instance
@@ -205,7 +205,7 @@ void getLines(LineSet *ls);
  * Example of line contents that will lead to a group being created:
  * {{9, abc}, {abc, 0x09}, {011, ABC}, {.9e1, aBc}, {ABc, 09}}
  */
-GroupSet* generateGroups(LineSet ls);
+void generateGroups(GroupSet *gs, LineSet *ls);
 
 /* U    N   U   S   E   D
  * Reads the next character, omitting any white-space before it.
@@ -237,5 +237,10 @@ void printNans(Line *line);
  * Prints all strings in line.numbers_multiset.
  */
 void printNumbers(Line *line);
+
+/*
+ * Returns true if both lines' multisets are equal, false otherwise.
+ */
+bool areLinesEqual(Line *l1, Line *l2);
 
 #endif //IPP_MALE_ZADANIE_SIMILAR_LINES_H

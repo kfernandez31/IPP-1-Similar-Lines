@@ -34,8 +34,6 @@ bool containsOnlyWhiteSpace(char *str) {
 
 bool wordEquals(Word *word1, Word *word2)
 {
-    bool retVal;
-
     if (word1->word_type != word2->word_type) {
         // incompatible types
         return false;
@@ -58,15 +56,12 @@ bool strEquals(char *str1, char *str2)
 
 bool numberEquals(Number *num1, Number *num2) {
 
-    int compResult;
-
     if (num1->val_type != num2->val_type) {
         // return false, because due to our conversion of strings such as "21.0" to integers,
         // there is no chance for such a number to be equal to a double with a non-zero fractional part
         return false;
     }
-    compResult = numbercmp(num1, num2);
-    return (compResult == 0);
+    return (numbercmp(num1, num2) == 0);
 }
 
 int cwNumbercmp(const void *cw1, const void *cw2)
@@ -84,7 +79,7 @@ int numbercmp(const Number *num1, const Number *num2)
     if (num1->val_type != num2->val_type) {
         return diffTypecmp(num1, num2);
     }
-    fprintf(stderr, "ERROR: Trying to compare numbers of unknown types (A)\n");
+    fprintf(stderr, "ERROR: Trying to compare numbers of unknown types\n");
     exit(EXIT_FAILURE);
 }
 
@@ -107,10 +102,12 @@ void createLine(Line *input, char *line_as_str, size_t line_num)
 
     input->line_num = line_num;
 
+    //TODO: co tu miałem na myśli?
+    // second condition is there to be able to prevent the program from stopping when passing a line with ''
+    // (empty char) and to just treat such line as illegal
+
     // no need to create a multiset in the three cases below, since line contents are to be omitted
     if (!containsOnlyLegalChars(line_as_str) || line_as_str == NULL) {
-        // second condition is there to be able to prevent the program from stopping when passing a line with ''
-        // (empty char) and to just treat such line as illegal
         input->line_type = ILLEGAL;
         input->nums_multiset = NULL;
         input->strings_multiset = NULL;
@@ -152,7 +149,10 @@ void createLine(Line *input, char *line_as_str, size_t line_num)
             if (idx == NOT_FOUND) {
                 // word wasn't found - add it to the multiset
                 CountedWord *cw = createCountedWord(w);
-                scv_push_back(strings, cw);
+                if (scv_push_back(strings, cw) != SCV_OK){
+                    fprintf(stderr, "Error during pushback\n");
+                    exit(EXIT_FAILURE);
+                }
             }
             else {
                 // word was found - increment its occurrences
@@ -162,10 +162,15 @@ void createLine(Line *input, char *line_as_str, size_t line_num)
         }
         else {
             idx = indexOfWord(nums, &w);
+
             if (idx == NOT_FOUND) {
                 // word wasn't found - add it to the multiset
                 CountedWord *cw = createCountedWord(w);
-                scv_push_back(nums, cw);
+
+                if (scv_push_back(nums, cw) != SCV_OK){
+                    fprintf(stderr, "Error during pushback\n");
+                    exit(EXIT_FAILURE);
+                }
             }
             else {
                 // word was found - increment its occurrences
@@ -173,7 +178,7 @@ void createLine(Line *input, char *line_as_str, size_t line_num)
                 cw->num_occurrences++;
             }
         }
-        // advances the pointer to next white-space
+        // advances the pointer to content after next white-space
         ptr = strtok(NULL, " ");
     }
     scv_shrink_to_fit(strings);
@@ -289,7 +294,7 @@ void createWordFromString(Word *word, char *str)
                 return;
             }
 
-            // Number looks like -5.0, -81.00000, etc. Treat it like an integer
+            // Number looks like -5.0, -81.00000, etc. Treat it as an integer
             word->u.number.val_type = NEGATIVE_INT;
             word->u.number.val._negative_int = res_ld;
             return;
@@ -317,6 +322,7 @@ void createWordFromString(Word *word, char *str)
 
         if (strlen(str) > 1 && isDecimalInteger(str + 1)) {
             word->u.number.val_type = UNSIGNED_INT;
+
             errno = 0;
             res_ull = strtoull(str, &endptr, DECIMAL);
             if (res_ull == 0 && (errno != 0 || endptr == str)) {
@@ -359,7 +365,7 @@ void createWordFromString(Word *word, char *str)
                 word->u.number.val._double = res_ld;
                 return;
             }
-            // Number looks like -5.0, -81.00000, etc. Treat it like an integer
+            // Number looks like -5.0, -81.00000, etc. Treat it as an integer
             word->u.number.val_type = UNSIGNED_INT;
             word->u.number.val._unsigned_int = res_ld;
             return;
@@ -399,9 +405,9 @@ void createWordFromString(Word *word, char *str)
 
         if (isHexInteger(str)) {
             word->u.number.val_type = UNSIGNED_INT;
+
             errno = 0;
             res_ull = strtoull(str, &endptr, HEX);
-
             if (res_ull == 0 && (errno != 0 || endptr == str)) {
                 // input is not a valid unsigned long long
                 word->word_type = NAN;
@@ -421,9 +427,9 @@ void createWordFromString(Word *word, char *str)
 
         if (isDecimalInteger(str)) {
             word->u.number.val_type = UNSIGNED_INT;
+
             errno = 0;
             res_ull = strtoull(str, &endptr, DECIMAL);
-
             if (res_ull == 0 && (errno != 0 || endptr == str)) {
                 // input is not a valid unsigned long long
                 word->word_type = NAN;
@@ -444,7 +450,6 @@ void createWordFromString(Word *word, char *str)
         if (isDouble(str)) {
             errno = 0;
             res_ld = strtold(str, &endptr);
-
             if (res_ld == 0 && (errno != 0 || endptr == str)) {
                 // input is not a valid long double
                 word->word_type = NAN;
@@ -464,7 +469,7 @@ void createWordFromString(Word *word, char *str)
                 word->u.number.val._double = res_ld;
                 return;
             }
-            // Number looks like -5.0, -81.00000, etc. Treat it like an integer
+            // Number looks like -5.0, -81.00000, etc. Treat it as an integer
             word->u.number.val_type = UNSIGNED_INT;
             word->u.number.val._unsigned_int = res_ld;
             return;
@@ -493,7 +498,7 @@ bool isDecimalInteger(char *str) {
     return true;
 }
 
-bool isDigit(char c) //TODO: a co robi funkcja isdigit() ?
+bool isDigit(char c)
 {
     return (c >= ZERO && c <= NINE);
 }
@@ -523,7 +528,7 @@ bool isOctalInteger(char *str) {
 }
 
 bool isHexInteger(char *str) {
-    if (strlen(str) < 2) {
+    if (strlen(str) < strlen("0x")) {
         // string can't contain prefix "0x"/"0X" because it's too short
         return false;
     }
@@ -549,6 +554,7 @@ void printErrorMessages(LineSet ls)
     scv_vector *lines = ls.lines;
     for (uint i = 0; i < scv_size(lines); i++) {
         Line *l = GET_ITEM(Line, lines, i);
+
         if (l->line_type == ILLEGAL) {
             printf("ERROR %u\n", l->line_num);
             // TODO: wiadomo, że to ma być do pliku
@@ -556,17 +562,10 @@ void printErrorMessages(LineSet ls)
     }
 }
 
-void sortGroups(GroupSet *gs)
+/*void sortGroups(GroupSet *gs)
 {
-    Group *group = NULL;
-    for (uint i = 0; i < scv_size(gs->groups); i++) {
-        group = GET_ITEM(Group, gs->groups, i);
-        //TODO: czy my_memcmp zadziała?
-        qsort(group->lines->data, scv_size(group->lines), sizeof(uint), my_memcmp);
-        //TODO: coo?
-    }
-    qsort(gs->groups, scv_size(gs->groups), sizeof(Group), groupcmp);
-}
+    qsort(gs->groups->data, scv_size(gs->groups), sizeof(Group), groupcmp);
+}*/
 
 void sortMultisets(Line *line)
 {
@@ -611,11 +610,6 @@ int sameTypecmp(const Number *num_a, const Number *num_b)
 
 int diffTypecmp(const Number *num_a, const Number *num_b)
 {
-    if (num_a->val_type == num_b->val_type) {
-        fprintf(stderr, "ERROR: Trying to compare numbers of the same type\n");
-        exit(EXIT_FAILURE);
-    }
-
     if (num_a->val_type == UNSIGNED_INT && num_b->val_type == NEGATIVE_INT) {
         return 1;
     }
@@ -664,7 +658,7 @@ int diffTypecmp(const Number *num_a, const Number *num_b)
         else return 0;
     }
 
-    fprintf(stderr, "ERROR: Trying to compare numbers of unknown types (B)\n");
+    fprintf(stderr, "ERROR: Trying to compare numbers of unknown/same types\n");
     exit(EXIT_FAILURE);
 }
 
@@ -672,25 +666,51 @@ int my_memcmp(const void *a, const void *b) {
     return memcmp(a, b, VAR_SIZE_8_BYTES);
 }
 
-int groupcmp(const void *a, const void *b) {
-    return my_memcmp(&((Group*)a)->lines[0], &((Group*)b)->lines[0]);
-}
+/*int groupcmp(const void *a, const void *b) {
+    Group *g_a = (Group*)a;
+    Group *g_b = (Group*)b;
 
-void printGroups(GroupSet gs)
+    uint *index_a = scv_at(g_a->lines, 0);
+    uint *index_b = scv_at(g_b->lines, 0);
+
+    if (index_a == NULL || index_b == NULL) {
+        fprintf(stderr, "Cannot compare with empty group\n");
+        exit(EXIT_FAILURE);
+    }
+*//*    int comp =  memcmp(scv_at(((Group*)a)->lines, 0), scv_at(((Group*)a)->lines, 0), sizeof(uint));
+
+    if (comp < 0) {
+        return -1;
+    }
+    if (comp > 0) {
+        return -1;
+    }
+    return 0;*//*
+
+    if (*index_a < *index_b) {
+        return -1;
+    }
+    if (*index_a > *index_b) {
+        return 1;
+    }
+    return 0;
+}*/
+
+void printGroups(GroupSet *gs)
 {
     Group *group = NULL;
     // TODO: wiadomo, że to ma być do pliku
-    for (uint i = 0; i < scv_size(gs.groups); i++) {
-        group = GET_ITEM(Group, gs.groups, i);
-        printGroup(*group);
+    for (uint i = 0; i < scv_size(gs->groups); i++) {
+        group = GET_ITEM(Group, gs->groups, i);
+        printGroup(group);
     }
 }
 
-void printGroup(Group g)
+void printGroup(Group *g)
 {
     // TODO: wiadomo, że to ma być do pliku
-    for (uint i = 0; i < scv_size(g.lines); i++) {
-        printf("%u ", *GET_ITEM(uint, g.lines, i));
+    for (uint i = 0; i < scv_size(g->lines); i++) {
+        printf("%u ", *GET_ITEM(uint, g->lines, i));
     }
     printf("\n");
 }
@@ -718,69 +738,89 @@ void getLines(LineSet *ls)
         else {
             createLine(&line, line_as_str, line_index++);
         }
-        if (SCV_OK != scv_push_back(ls->lines, &line)){
-            fprintf(stderr, "Error during creation of line set\n");
+        if (scv_push_back(ls->lines, &line) != SCV_OK){
+            fprintf(stderr, "Error during pushback\n");
             exit(EXIT_FAILURE);
         }
-        scv_push_back(ls->lines, &line);
     }
 }
 
-GroupSet* generateGroups(LineSet ls)
+void generateGroups(GroupSet *gs, LineSet *ls)
 {
-    GroupSet *gs = NULL;
-    GroupSet *temp1 = malloc(sizeof(GroupSet));
+    scv_vector *temp1 = scv_new(sizeof(Group), INIT_CAP);
     if (temp1 == NULL){
         fprintf(stderr, "ERROR: Ran out of memory!\n");
         exit(EXIT_FAILURE);
     }
-    gs = temp1;
+    gs->groups = temp1;
 
-    scv_vector *temp2 = scv_new(sizeof(Group), INIT_CAP);
-    if (temp1 == NULL){
-        fprintf(stderr, "ERROR: Ran out of memory!\n");
-        exit(EXIT_FAILURE);
-    }
-    gs->groups = temp2;
 
-    Group *group = NULL;
-    Line *line_i = NULL, *line_j = NULL;
+    for (uint i = 0; i < scv_size(ls->lines); i++) {
+        Line *line_i = GET_ITEM(Line, ls->lines, i);
 
-    for (uint i = 0; i < scv_size(ls.lines); i++) {
-        line_i = GET_ITEM(Line, ls.lines, i);
         if (!line_i->belongs_to_group) {
-            // create new group based on current line, add current line to it
-            Group *temp3 = malloc(sizeof(Group));
-            if (temp3 == NULL){
+            // create new cur_group based on current line, add current line to it
+            //TODO: czy tu potrzebny malloc()... dwukrotnie ?
+
+            Group *cur_group = NULL;
+            Group *temp2 = malloc(sizeof(Group));
+            if (temp2 == NULL) {
                 fprintf(stderr, "ERROR: Ran out of memory!\n");
                 exit(EXIT_FAILURE);
             }
-            group = temp3;
+            cur_group = temp2;
 
-            scv_vector *temp4 = scv_new(sizeof(uint), INIT_CAP);
-            if (temp4 == NULL){
+            scv_vector *temp3 = scv_new(sizeof(uint*), INIT_CAP);
+            if (temp3 == NULL) {
                 fprintf(stderr, "ERROR: Ran out of memory!\n");
                 exit(EXIT_FAILURE);
             }
-            group->lines = temp4;
+            cur_group->lines = temp3;
 
-            scv_push_back(group->lines, &line_i->line_num);
+            if (scv_push_back(cur_group->lines, &line_i->line_num) != SCV_OK) {
+                fprintf(stderr, "Error during pushback\n");
+                exit(EXIT_FAILURE);
+            }
 
-            for (int j = i; j < scv_size(ls.lines); j++) {
-                line_j = GET_ITEM(Line, ls.lines, j);
-                if (vectorEquals(line_i->strings_multiset, line_j->strings_multiset) && vectorEquals(line_i->nums_multiset, line_j->nums_multiset)) {
-                    // Lines contain identical multisets of Numbers and NaNs
-                    scv_push_back(group->lines, &line_j->line_num);
+            for (uint j = i + 1; j < scv_size(ls->lines); j++) {
+                Line *line_j = GET_ITEM(Line, ls->lines, j);
+
+                bool res1 = line_j != NULL;
+                bool res2 = areLinesEqual(line_i, line_j);
+                //TODO: jebie się na j=5
+                bool res3 = !line_j->belongs_to_group;
+
+/*                if (line_j != NULL && areLinesEqual(line_i, line_j) && !line_j->belongs_to_group) {
+                    if (scv_push_back(cur_group->lines, &line_j->line_num) != SCV_OK) {
+                        fprintf(stderr, "Error during pushback\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    line_j->belongs_to_group = true;
+                }*/
+
+                if (res1) {
+                    if (res2) {
+                        if (res3) {
+                            if (scv_push_back(cur_group->lines, &line_j->line_num) != SCV_OK) {
+                                fprintf(stderr, "Error during pushback\n");
+                                exit(EXIT_FAILURE);
+                            }
+                        }
+                    }
                     line_j->belongs_to_group = true;
                 }
             }
+            line_i->belongs_to_group = true;
+
+            // add current group to groupset
+            if (scv_push_back(gs->groups , cur_group) != SCV_OK) {
+                fprintf(stderr, "Error during pushback\n");
+                exit(EXIT_FAILURE);
+            }
         }
-        // in case we didn't find matching lines, the group will be a singleton
-        // i.e. all lines are in some sort of group - with oneself or with others
-        line_i->belongs_to_group = true;
+        // in case we didn't find matching lines, the cur_group will be a singleton
+        // i.e. all lines are in some sort of cur_group - with oneself or with others
     }
-    sortGroups(gs);
-    return gs;
 }
 
 bool vectorEquals(scv_vector *v1, scv_vector *v2)
@@ -799,17 +839,6 @@ bool vectorEquals(scv_vector *v1, scv_vector *v2)
     }
     return true;
 }
-
-/*char getcharBetter()
-{
-    int c;
-    do
-    {
-        c = getchar();
-    } while(isspace(c));
-
-    return (char)c;
-}*/
 
 ssize_t my_getline(char **_lineptr, size_t *_n)
 {
@@ -852,4 +881,10 @@ void printNumbers(Line *line)
                 break;
         }
     }
+}
+
+bool areLinesEqual(Line *l1, Line *l2)
+{
+    return (vectorEquals(l1->strings_multiset, l2->strings_multiset) &&
+    vectorEquals(l1->nums_multiset, l2->nums_multiset));
 }
