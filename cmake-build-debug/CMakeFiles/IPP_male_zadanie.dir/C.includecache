@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/scv.h
+stddef.h
+-
+
+/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/similar_lines.c
+similar_lines.h
+/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/similar_lines.h
+
+/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/similar_lines.h
+stdio.h
+-
+stdbool.h
+-
+stdlib.h
+-
+string.h
+-
+strings.h
+-
+ctype.h
+-
+limits.h
+-
+float.h
+-
+errno.h
+-
+structures.h
+/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/structures.h
+
+/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/structures.h
+scv.h
+/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/scv.h
+

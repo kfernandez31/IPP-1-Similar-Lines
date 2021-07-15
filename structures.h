@@ -5,10 +5,6 @@
 #ifndef IPP_MALE_ZADANIE_STRUCTURES_H
 #define IPP_MALE_ZADANIE_STRUCTURES_H
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <errno.h>
 #include "scv.h"
 
 #define GET_ITEM(TYPE,vector,index) (TYPE*)scv_at(vector, index)
@@ -37,8 +33,8 @@ typedef enum LineType
 
 typedef enum WordType
 {
-    NAN = 0,
-    NUM = 1,
+    NAN_e = 0,
+    NUM_e = 1,
 } WordType;
 
 typedef enum ValType
@@ -96,8 +92,8 @@ typedef struct Line
 {
     LineType line_type;
     uint line_num;
-    scv_vector *nums_multiset;
-    scv_vector *strings_multiset;
+    scv_vector *numbersMultiset;
+    scv_vector *nansMultiset;
     //TODO: "jak będziesz miał powyżej 120 alokacji na example.c, to ci utną punkty"
     bool belongs_to_group;
 } Line;

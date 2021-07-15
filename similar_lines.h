@@ -11,8 +11,10 @@
 #define ZERO 48
 #define SEVEN 55
 #define NINE 57
-#define A 65
-#define F 70
+#define UPPER_A 65
+#define UPPER_F 70
+#define LOWER_A 97
+#define LOWER_F 102
 
 #define NOT_FOUND -1
 #define INIT_CAP 1
@@ -26,20 +28,13 @@
 #include <ctype.h>
 #include <limits.h>
 #include <float.h>
+#include <errno.h>
 #include "structures.h"
 
 /*
  * Returns true if str is same as "NaN" regardless of case, false otherwise.
  */
 bool strEqualsWithNaN(char *str);
-
-/*
- * Returns true if str represents a double.
- * Handles all kinds of doubles, i.e: 0.25, .33, -1E-1, INF, -INF, 21.37, etc.
- * Actually, the function also handles NaN (written irregardless of case), but according to the assignment,
- * I'll treat NaN as a non-number in createWordFromString().
- */
-bool isDouble(char *str);
 
 /*
  * Returns true if number is written in base 8, false otherwise.
@@ -115,12 +110,6 @@ int numbercmp(const Number *num1, const Number *num2);
  */
 int cwNancmp(const void *cw1, const void *cw2);
 
-/* U    N   U   S   E   D
- * Function to compare two words,
- * in order to sort them later on.
- *//*
-int wordcmp(Word *word1, Word *word2);*/
-
 /*
  * Compares CountedWord instances of both types: number or NaN.
  */
@@ -146,27 +135,17 @@ CountedWord* createCountedWord(Word w);
  * Creates an instance of struct Line.
  * Its field words_multiset is non-NULL if and only if line_type is LEGAL.
  */
-void createLine(Line *input, char *line_as_str, size_t line_num);
+void createLine(Line *line, char *str, size_t line_num);
 
 /*
  * Prints into a file which lines contained illegal characters.
  */
-void printErrorMessages(LineSet ls);
-
-/*  U   N   U   S   E   D
- * Sorting function for groups (in ascending order).
- */
-/*void sortGroups(GroupSet *gs);*/
+void printErrorMessages(LineSet *ls);
 
 /*
  * Sorting function for both multisets of a line.
  */
 void sortMultisets(Line *line);
-
-/*
- * Memcmp, but N is set to VAR_SIZE_8_BYTES
- */
-int my_memcmp(const void *a, const void *b);
 
 /*
  * Function to compare two numbers of same val_type.
@@ -179,23 +158,17 @@ int sameTypecmp(const Number *num_a, const Number *num_b);
 int diffTypecmp(const Number *num_a, const Number *num_b);
 
 /*
- * Function to compare two groups,
- * in order to sort them later on.
- */
-int groupcmp(const void *a, const void *b);
-
-/*
  * Prints all groups in gs.
  */
 void printGroups(GroupSet *gs);
 
-/*
+/*o
  * Prints a single group.
  */
 void printGroup(Group *g);
 
 /*
- * Reads lines from standard input, converting each to an instance of struct Line, and adding them to an instance
+ * Reads lines from standard input, converting each to an instance f struct Line, and adding them to an instance
  * of struct LineSet.
  */
 void getLines(LineSet *ls);
@@ -206,11 +179,6 @@ void getLines(LineSet *ls);
  * {{9, abc}, {abc, 0x09}, {011, ABC}, {.9e1, aBc}, {ABc, 09}}
  */
 void generateGroups(GroupSet *gs, LineSet *ls);
-
-/* U    N   U   S   E   D
- * Reads the next character, omitting any white-space before it.
- */
-/*char getcharBetter();*/
 
 /*
  * Returns true if all elements (of type CountedWord) of both vectors return true on cwEquals(),
@@ -229,7 +197,7 @@ bool isDigit(char c);
 ssize_t my_getline(char **_lineptr, size_t *_n);
 
 /*
- * Prints all strings in line.strings_multiset.
+ * Prints all strings in line.nansMultiset.
  */
 void printNans(Line *line);
 
@@ -239,8 +207,27 @@ void printNans(Line *line);
 void printNumbers(Line *line);
 
 /*
+ * Prints all lines of a LineSet.
+ */
+void printLines(LineSet *ls);
+
+/*
+ * Prints both multisets of a line.
+ */
+void printLineContents(Line *line);
+
+/*
  * Returns true if both lines' multisets are equal, false otherwise.
  */
 bool areLinesEqual(Line *l1, Line *l2);
+
+/*
+ * Floor function for long doubles
+ */
+long double myFloor(long double x);
+
+//TODO: dorobić
+void freeLineSet();
+void freeGroupSet();
 
 #endif //IPP_MALE_ZADANIE_SIMILAR_LINES_H
