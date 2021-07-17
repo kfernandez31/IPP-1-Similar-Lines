@@ -13,6 +13,8 @@ stddef.h
 /mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/similar_lines.c
 similar_lines.h
 /mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/similar_lines.h
+tgmath.h
+-
 
 /mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/similar_lines.h
 stdio.h

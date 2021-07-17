@@ -1,1 +1,1 @@
-/usr/bin/cc -g   CMakeFiles/IPP_male_zadanie.dir/main.c.o CMakeFiles/IPP_male_zadanie.dir/similar_lines.c.o CMakeFiles/IPP_male_zadanie.dir/scv.c.o CMakeFiles/IPP_male_zadanie.dir/test/test.c.o  -o IPP_male_zadanie 
+/usr/bin/cc  -lm -g   CMakeFiles/IPP_male_zadanie.dir/main.c.o CMakeFiles/IPP_male_zadanie.dir/similar_lines.c.o CMakeFiles/IPP_male_zadanie.dir/scv.c.o CMakeFiles/IPP_male_zadanie.dir/test/test.c.o  -o IPP_male_zadanie 
