@@ -72,7 +72,7 @@ Moduł może też składać się z samego pliku nagłówkowego, jeśli udostępn
 Moduł może też składać się z samego pliku z implementacją, jeśli nie udostępnia żadnego interfejsu – żadne funkcje z tego modułu nie są wywoływane z innych modułów.
 
 Ponadto rozwiązanie powinno zawierać pliki:
-- `makefile` – Patrz punkt „makefile”.
-- `test.sh` – Patrz punkt „skrypt testujący”.
+- `makefile` – Patrz punkt ["**makefile**"](https://github.com/kfernandez31/IPP-1-Similar-Lines#makefile).
+- `test.sh` – Patrz punkt [**"skrypt testujący”**](https://github.com/kfernandez31/IPP-1-Similar-Lines#skrypt-testuj%C4%85cy).
 
 Rozwiązanie należy oddać jako archiwum skompresowane programem `zip` lub parą programów `tar` i `gzip`.
