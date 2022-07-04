@@ -1,3 +1,0 @@
-/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/c/Users/kacpe/CLionProjects/IPP_male_zadanie/cmake-build-debug/CMakeFiles/IPP_male_zadanie.dir
