@@ -27,11 +27,15 @@ Program kończy działanie po przetworzeniu wszystkich wierszy z wejścia. Progr
 
 ## Przykładowe dane
 
-Przykładowe dane dla programu znajdują się w załączonym poniżej pliku `example.zip`.
+Przykładowe dane dla programu znajdują się w załączonej paczce `example`, czyli:
+- [**example.in**](https://github.com/kfernandez31/IPP-1-Similar-Lines/blob/main/src/test/example.in)
+- [**example.out**](https://github.com/kfernandez31/IPP-1-Similar-Lines/blob/main/src/test/example.out)
+- [**example.err**](https://github.com/kfernandez31/IPP-1-Similar-Lines/blob/main/src/test/example.err)
+
 
 ## Makefile
 
-Częścią zadania jest napisanie pliku `makefile`. W wyniku wywołania polecenia make powinien powstać program wykonywalny `similar_lines`. Jeśli któryś z plików źródłowych ulegnie zmianie, ponowne wpisanie make powinno na nowo stworzyć plik wykonywalny. Plik `makefile` powinien działać w następujący sposób:
+Częścią zadania jest napisanie pliku [**makefile**](https://github.com/kfernandez31/IPP-1-Similar-Lines/blob/main/makefile). W wyniku wywołania polecenia make powinien powstać program wykonywalny `similar_lines`. Jeśli któryś z plików źródłowych ulegnie zmianie, ponowne wpisanie make powinno na nowo stworzyć plik wykonywalny. Plik [**makefile**](https://github.com/kfernandez31/IPP-1-Similar-Lines/blob/main/makefile) powinien działać w następujący sposób:
 
 - osobno kompiluje każdy plik .c,
 - linkuje wszystkie pliki .o,
@@ -45,7 +49,7 @@ Docelowo pliki rozwiązania należy kompilować programem `gcc` z opcjami:
 
 ## Skrypt testujący
 
-Osobną częścią zadania jest napisanie skryptu `test.sh`. Po wywołaniu
+Osobną częścią zadania jest napisanie skryptu [**test.sh**](https://github.com/kfernandez31/IPP-1-Similar-Lines/blob/main/test.sh). Po wywołaniu
 ```
 ./test.sh prog dir
 ```
@@ -57,7 +61,7 @@ Do wykrywania problemów z zarządzaniem pamięcią należy użyć programu `val
 
 Rozwiązanie zadania powinno być napisane w języku C i korzystać z dynamicznie alokowanych struktur danych. Implementacja powinna być jak najefektywniejsza. Należy unikać zbędnego alokowania pamięci i kopiowania danych.
 
-Program będzie sprawdzany na maszynie students.mimuw.edu.pl i musi kompilować się oraz działać na tej maszynie.
+Program będzie sprawdzany na maszynie **students.mimuw.edu.pl** i musi kompilować się oraz działać na tej maszynie.
 
 Kod programu powinien być podzielony na **moduły**.
 

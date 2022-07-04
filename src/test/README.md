@@ -2,7 +2,7 @@
 https://gitlab.com/mimuw-ipp-2021/testy-male-zadanie
 
 ## Testy oficjalne
-TODO
+https://github.com/kfernandez31/IPP-1-Similar-Lines/tree/main/src/test
 
 ## Punktacja
 
